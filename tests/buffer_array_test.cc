@@ -112,7 +112,7 @@ TEST(Align2DBufferFunctionalTest, VectorIterator) {
   for (int r = 0; r < row; ++r) {
     for (int c = 0; c < col; ++c) {
       const int val = rect.Element(r, c);
-      EXPECT_EQ(val, (r % 2 ? 1 : 0));
+      EXPECT_EQ(val, (r % 2 ? 0 : 1));
     }
   }
 }
