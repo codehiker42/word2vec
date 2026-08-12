@@ -16,7 +16,7 @@ class WordReader {
   explicit WordReader(std::istream& stream);
   ~WordReader() = default;
 
-  std::optional<std::string> Next();
+  virtual std::optional<std::string> Next();
 
  private:
   std::ifstream fstream_;
