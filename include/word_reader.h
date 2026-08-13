@@ -3,18 +3,23 @@
 
 #include <filesystem>
 #include <fstream>
-#include <optional>
 #include <mutex>
-#include <unordered_map>
+#include <optional>
+
 
 class WordReader {
  public:
   inline const static std::string NEW_LINE{"\n"};
+  WordReader() = default;
+  virtual ~WordReader() = default;
+  virtual std::optional<std::string> Next() = 0;
+};
 
-  WordReader() = delete;
-  explicit WordReader(const std::filesystem::path& file_path);
-  explicit WordReader(std::istream& stream);
-  ~WordReader() = default;
+class WordStreamReader : public WordReader {
+ public:
+  explicit WordStreamReader(const std::filesystem::path& file_path);
+  explicit WordStreamReader(std::istream& stream);
+  virtual ~WordStreamReader() = default;
 
   virtual std::optional<std::string> Next();
 

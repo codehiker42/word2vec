@@ -12,12 +12,12 @@ std::ifstream ToStream(const std::filesystem::path& file_path) {
 }
 }  // namespace
 
-WordReader::WordReader(const std::filesystem::path& file_path)
+WordStreamReader::WordStreamReader(const std::filesystem::path& file_path)
     : fstream_(ToStream(file_path)), stream_(fstream_) {}
 
-WordReader::WordReader(std::istream& stream) : stream_(stream) {}
+WordStreamReader::WordStreamReader(std::istream& stream) : stream_(stream) {}
 
-std::optional<std::string> WordReader::Next() {
+std::optional<std::string> WordStreamReader::Next() {
   if (!stream_) {
     return {};
   }

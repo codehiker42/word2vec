@@ -9,7 +9,7 @@
 #include <thread>
 
 TEST(PathConstructorTest, UnexistFileName) {
-  EXPECT_THROW(WordReader("UnexistDirectory/UnexistFileName.EXT"),
+  EXPECT_THROW(WordStreamReader("UnexistDirectory/UnexistFileName.EXT"),
                std::runtime_error);
 }
 
@@ -23,7 +23,7 @@ TEST(PathConstructorTest, EmptyFileReading) {
   }
 
   // when, create a WordReader
-  WordReader reader(path);
+  WordStreamReader reader(path);
 
   // then, no error and reads nothing
   EXPECT_FALSE(reader.Next().has_value());
@@ -184,7 +184,7 @@ TEST_P(WordStreamParamTest, StreamReading) {
   std::istringstream iss(param.content_);
 
   // when, for every WordReader intance
-  WordReader word_reader(iss);
+  WordStreamReader word_reader(iss);
 
   // then,
   for (const auto& word : param.words_seq_) {
@@ -201,7 +201,7 @@ TEST_P(WordStreamParamTest, ConcurrentStreamReading) {
   // when, one WordReader, one stream, but my multiple threads
   const size_t n_threads = 5;
   std::barrier sync_point(n_threads);
-  WordReader word_reader(iss);
+  WordStreamReader word_reader(iss);
   auto func = [](WordReader& reader, std::barrier<>& sync) {
     std::vector<std::string> words;
     sync.arrive_and_wait();
