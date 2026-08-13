@@ -23,11 +23,7 @@ class Dictionary {
 
   Dictionary(
       const std::filesystem::path& file_path, const size_t min_freq,
-      const std::function<std::unique_ptr<WordReader>(
-          const std::filesystem::path&)>& factory_fn =
-          [](const std::filesystem::path& fp) {
-            return std::make_unique<WordStreamReader>(fp);
-          });
+      const WordReader::FactoryFnT& factory_fn = WorkStreamReaderFunctor());
 
   std::optional<W2VType::WordIndexT> GetIndex(const std::string& word) const;
 
@@ -35,7 +31,7 @@ class Dictionary {
 
   const size_t VocabSize() const;
 
-  const size_t NumTotalFreqs() const; // not including NEW_LINE
+  const size_t NumTotalFreqs() const;  // not including NEW_LINE
 
   const size_t WordFreq(W2VType::WordIndexT w_id) const;
 
