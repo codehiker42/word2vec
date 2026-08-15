@@ -39,17 +39,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DictionaryTestFixture, ParameterChecking) {
   const DictTestValues& param = GetParam();
   // given
-  MockWordReader* mock_reader = new MockWordReader();
-  {
-    InSequence seq;
-    for (const std::string& word : param.words_) {
-      EXPECT_CALL(*mock_reader, Next())
-          .WillOnce(Return(std::optional<std::string>{word}))
-          .RetiresOnSaturation();
-    }
-    EXPECT_CALL(*mock_reader, Next())
-        .WillOnce(Return(std::optional<std::string>{}));
-  }
+  MockWordReader* mock_reader = CreateMockWordReader(param.words_);
 
   // when
   Dictionary dictionary(kUnexistPath, param.min_freq_,
