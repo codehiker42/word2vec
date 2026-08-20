@@ -29,9 +29,9 @@ constexpr OpValueType ConvertBool(const char* arg_val) {
 template <typename T>
 constexpr T ReadFromStream(const char* char_val) {
   std::istringstream iss(char_val);
-  T int_val;
-  iss >> int_val;
-  return int_val;
+  T num_val;
+  iss >> num_val;
+  return num_val;
 }
 
 template <typename T>

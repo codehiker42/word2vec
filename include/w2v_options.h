@@ -30,21 +30,21 @@ class Word2VecOptions : public ConsoleOptionValues {
 
   const float LearningRate() const;
 
-  const uint8_t WindowSize() const;
+  const uint16_t WindowSize() const;
 
   const float DownSamplingSize() const;
 
   const bool UseHierachicalSoftmax() const;
 
-  const uint8_t NegativeSize() const;
+  const uint16_t NegativeSize() const;
 
-  const uint8_t IterationSize() const;
+  const uint16_t IterationSize() const;
 
-  const uint8_t MinCount() const;
+  const uint16_t MinCount() const;
 
   const uint16_t NumClusters() const;
 
-  const uint8_t ThreadSize() const;
+  const uint16_t ThreadSize() const;
 };
 
 #endif

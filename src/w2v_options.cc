@@ -20,11 +20,11 @@ struct DefaultOption {
 
   inline static const std::tuple<uint64_t, std::string> kLayerSize{100, "100"};
 
-  inline static const std::tuple<uint8_t, std::string> kWindowSize{5, "5"};
-  inline static const std::tuple<uint8_t, std::string> kNegativeSize{5, "5"};
-  inline static const std::tuple<uint8_t, std::string> kIterationSize{5, "5"};
-  inline static const std::tuple<uint8_t, std::string> kMinCount{5, "5"};
-  inline static const std::tuple<uint8_t, std::string> kDefaultThread{12, "12"};
+  inline static const std::tuple<uint16_t, std::string> kWindowSize{5, "5"};
+  inline static const std::tuple<uint16_t, std::string> kNegativeSize{5, "5"};
+  inline static const std::tuple<uint16_t, std::string> kIterationSize{5, "5"};
+  inline static const std::tuple<uint16_t, std::string> kMinCount{5, "5"};
+  inline static const std::tuple<uint16_t, std::string> kDefaultThread{12, "12"};
 };
 
 struct W2VOpNames {
@@ -52,12 +52,12 @@ Word2VecOptions::Word2VecOptions(int argc, char** argv)
           argc, argv,
           {{W2VOpNames::train, 't', true,
             "<file>;Use text data from <file> to train the model",
-            typeid(std::string)},
+            typeid(std::filesystem::path)},
 
            {W2VOpNames::output, 'o', true,
             "<file>;Use <file> to save the resulting 'word vectors / word "
             "clusters'",
-            typeid(std::string)},
+            typeid(std::filesystem::path)},
 
            {W2VOpNames::size, 's', true, "<int>;Set size of word vectors",
             DefaultOption::kLayerSize},
@@ -104,12 +104,12 @@ Word2VecOptions::Word2VecOptions(int argc, char** argv)
 
            {W2VOpNames::save_vocab, 0, false,
             "<file>;The vocabulary will be saved to <file>",
-            typeid(std::string)},
+            typeid(std::filesystem::path)},
 
            {W2VOpNames::read_vocab, 0, false,
             "<file>;The vocabulary will be read from <file>, not constructed "
             "from the training data",
-            typeid(std::string)},
+            typeid(std::filesystem::path)},
 
            {W2VOpNames::skip_gram, 0, false,
             ";Use skip-gram model, otherwise CBOW",
@@ -164,8 +164,8 @@ const float Word2VecOptions::LearningRate() const {
   return get<float>(W2VOpNames::alpha);
 }
 
-const uint8_t Word2VecOptions::WindowSize() const {
-  return get<uint8_t>(W2VOpNames::window);
+const uint16_t Word2VecOptions::WindowSize() const {
+  return get<uint16_t>(W2VOpNames::window);
 }
 
 const float Word2VecOptions::DownSamplingSize() const {
@@ -176,16 +176,16 @@ const bool Word2VecOptions::UseHierachicalSoftmax() const {
   return get<bool>(W2VOpNames::hs);
 }
 
-const uint8_t Word2VecOptions::NegativeSize() const {
-  return get<uint8_t>(W2VOpNames::negative);
+const uint16_t Word2VecOptions::NegativeSize() const {
+  return get<uint16_t>(W2VOpNames::negative);
 }
 
-const uint8_t Word2VecOptions::IterationSize() const {
-  return get<uint8_t>(W2VOpNames::iter);
+const uint16_t Word2VecOptions::IterationSize() const {
+  return get<uint16_t>(W2VOpNames::iter);
 }
 
-const uint8_t Word2VecOptions::MinCount() const {
-  return get<uint8_t>(W2VOpNames::min_count);
+const uint16_t Word2VecOptions::MinCount() const {
+  return get<uint16_t>(W2VOpNames::min_count);
 }
 
 const uint16_t Word2VecOptions::NumClusters() const {
@@ -193,10 +193,10 @@ const uint16_t Word2VecOptions::NumClusters() const {
 }
 
 const bool Word2VecOptions::HasMandatoryOptions() const {
-  return get_op<std::string>(W2VOpNames::train).has_value() &&
-         get_op<std::string>(W2VOpNames::output).has_value();
+  return get_op<std::filesystem::path>(W2VOpNames::train).has_value() &&
+         get_op<std::filesystem::path>(W2VOpNames::output).has_value();
 }
 
-const uint8_t Word2VecOptions::ThreadSize() const {
-  return get<uint8_t>(W2VOpNames::threads);
+const uint16_t Word2VecOptions::ThreadSize() const {
+  return get<uint16_t>(W2VOpNames::threads);
 }
