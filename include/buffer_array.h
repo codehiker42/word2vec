@@ -30,7 +30,7 @@ class Aligned2DBuffer {
       : n_row_(n_row),
         n_col_(n_col),
         vec_stride_size_(CalcPadding(n_col * sizeof(T)) / sizeof(T)) {
-    const auto size = CalcPadding(n_row * n_col * sizeof(T));
+    const auto size = CalcPadding(n_row * vec_stride_size_ * sizeof(T));
     buffer_ = static_cast<T*>(std::aligned_alloc(align, size));
     if (!buffer_) {
       throw std::bad_alloc{};
