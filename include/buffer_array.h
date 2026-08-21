@@ -86,7 +86,7 @@ class Aligned2DBuffer {
     return {begin, end};
   }
 
-  const size_t VecSize() const { return n_col_; }
+  size_t VecSize() const { return n_col_; }
 
  private:
   void CheckIfBufferIsValid() const {

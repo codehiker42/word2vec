@@ -10,7 +10,7 @@ class Word2VecOptions : public ConsoleOptionValues {
   Word2VecOptions() = default;
   Word2VecOptions(int argc, char** argv);
 
-  const bool HasMandatoryOptions() const override;
+  bool HasMandatoryOptions() const override;
 
   const std::optional<std::filesystem::path> TrainFileName() const;
 
@@ -20,31 +20,31 @@ class Word2VecOptions : public ConsoleOptionValues {
 
   const std::optional<std::filesystem::path> OutputVectorFilePath() const;
 
-  const uint64_t LayerSize() const;
+  uint64_t LayerSize() const;
 
-  const bool IsDebugMode() const;
+  bool IsDebugMode() const;
 
-  const bool IsBinaryWriting() const;
+  bool IsBinaryWriting() const;
 
-  const bool IsCBowOrSkip() const;
+  bool IsCBowOrSkip() const;
 
-  const float LearningRate() const;
+  float LearningRate() const;
 
-  const uint16_t WindowSize() const;
+  uint16_t WindowSize() const;
 
-  const float DownSamplingSize() const;
+  float DownSamplingSize() const;
 
-  const bool UseHierachicalSoftmax() const;
+  bool UseHierachicalSoftmax() const;
 
-  const uint16_t NegativeSize() const;
+  uint16_t NegativeSize() const;
 
-  const uint16_t IterationSize() const;
+  uint16_t IterationSize() const;
 
-  const uint16_t MinCount() const;
+  uint16_t MinCount() const;
 
-  const uint16_t NumClusters() const;
+  uint16_t NumClusters() const;
 
-  const uint16_t ThreadSize() const;
+  uint16_t ThreadSize() const;
 };
 
 #endif

@@ -14,7 +14,7 @@ ConsoleOptionValues::ConsoleOptionValues(
 
   std::string short_op_str;
   std::unordered_map<int, std::string> short_op_map;
-  for (auto i = 0; i < op_values.size(); ++i) {
+  for (size_t i = 0; i < op_values.size(); ++i) {
     auto& op_val = *(op_values.begin() + i);
     name_order_vec_.emplace_back(op_val.name_);
     value_map_.emplace(op_val.name_, op_val);

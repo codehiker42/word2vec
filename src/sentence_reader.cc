@@ -64,13 +64,13 @@ BufferedDaemonSentenceReader::RingBuffer::RingBuffer()
       p_ring_cell_(static_cast<RingCell*>(::operator new(
           sizeof(BufferedDaemonSentenceReader::RingCell) * kRingBufferSize,
           std::align_val_t(kCacheLineSize)))) {
-  for (auto i = 0; i < kRingBufferSize; ++i) {
+  for (size_t i = 0; i < kRingBufferSize; ++i) {
     new (&p_ring_cell_[i]) RingCell(i);
   }
 }
 
 BufferedDaemonSentenceReader::RingBuffer::~RingBuffer() {
-  for (auto i = 0; i < kRingBufferSize; ++i) {
+  for (size_t i = 0; i < kRingBufferSize; ++i) {
     p_ring_cell_[i].~RingCell();
   }
   ::operator delete(p_ring_cell_, std::align_val_t(kCacheLineSize));

@@ -85,7 +85,7 @@ void Dictionary::DumpVocab(const std::filesystem::path& file_path) const {
   if (!ostream.is_open()) {
     throw std::exception();
   }
-  for (auto i = 0; i < word_freqs_.size(); ++i) {
+  for (size_t i = 0; i < word_freqs_.size(); ++i) {
     ostream << (i != 0 ? map_iters_.at(i)->first : NEW_LINE_SYM) << "\t"
             << word_freqs_.at(i) << "\n";
   }
@@ -102,13 +102,11 @@ std::optional<W2VType::WordIndexT> Dictionary::GetIndex(
                                        : std::optional<W2VType::WordIndexT>{};
 }
 
-const size_t Dictionary::VocabSize() const {
-  return word_index_map_.size() + 1;
-}
+size_t Dictionary::VocabSize() const { return word_index_map_.size() + 1; }
 
-const size_t Dictionary::NumTotalFreqs() const { return n_total_words_; }
+size_t Dictionary::NumTotalFreqs() const { return n_total_words_; }
 
-const size_t Dictionary::WordFreq(W2VType::WordIndexT w_id) const {
+size_t Dictionary::WordFreq(W2VType::WordIndexT w_id) const {
   return w_id >= word_freqs_.size() ? 0 : word_freqs_.at(w_id);
 }
 

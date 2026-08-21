@@ -28,7 +28,7 @@ UnigramTable::UnigramTable(const std::vector<size_t>& freq_vec,
   // equivalent outcome, but not the same as the original.
   double threshold = std::pow(freq_vec.at(1), power) / accum_pow;
   W2VType::WordIndexT word_index = 1;
-  for (auto i = 0; i < table_size; ++i) {
+  for (size_t i = 0; i < table_size; ++i) {
     table_[i] = word_index;
     if (static_cast<double>(i) / table_size > threshold) {
       word_index = std::min(word_index + 1, freq_vec.size() - 1);

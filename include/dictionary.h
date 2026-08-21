@@ -29,11 +29,11 @@ class Dictionary {
 
   void DumpVocab(const std::filesystem::path& file_path) const;
 
-  const size_t VocabSize() const;
+  size_t VocabSize() const;
 
-  const size_t NumTotalFreqs() const;  // not including NEW_LINE
+  size_t NumTotalFreqs() const;  // not including NEW_LINE
 
-  const size_t WordFreq(W2VType::WordIndexT w_id) const;
+  size_t WordFreq(W2VType::WordIndexT w_id) const;
 
   const std::optional<std::string> Word(W2VType::WordIndexT w_id) const;
 

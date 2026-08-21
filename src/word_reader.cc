@@ -8,7 +8,7 @@ std::ifstream ToStream(const std::filesystem::path& file_path) {
   if (!word_file) {
     throw std::runtime_error("Can't access " + file_path.generic_string());
   }
-  return std::move(word_file);
+  return word_file;
 }
 }  // namespace
 

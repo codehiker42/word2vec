@@ -144,59 +144,59 @@ Word2VecOptions::OutputVectorFilePath() const {
   return get_op<std::filesystem::path>(W2VOpNames::output);
 }
 
-const uint64_t Word2VecOptions::LayerSize() const {
+uint64_t Word2VecOptions::LayerSize() const {
   return get<uint64_t>(W2VOpNames::size);
 }
 
-const bool Word2VecOptions::IsDebugMode() const {
+bool Word2VecOptions::IsDebugMode() const {
   return get<bool>(W2VOpNames::debug);
 }
 
-const bool Word2VecOptions::IsBinaryWriting() const {
+bool Word2VecOptions::IsBinaryWriting() const {
   return get<bool>(W2VOpNames::binary);
 }
 
-const bool Word2VecOptions::IsCBowOrSkip() const {
+bool Word2VecOptions::IsCBowOrSkip() const {
   return get<bool>(W2VOpNames::skip_gram);
 }
 
-const float Word2VecOptions::LearningRate() const {
+float Word2VecOptions::LearningRate() const {
   return get<float>(W2VOpNames::alpha);
 }
 
-const uint16_t Word2VecOptions::WindowSize() const {
+uint16_t Word2VecOptions::WindowSize() const {
   return get<uint16_t>(W2VOpNames::window);
 }
 
-const float Word2VecOptions::DownSamplingSize() const {
+float Word2VecOptions::DownSamplingSize() const {
   return get<float>(W2VOpNames::sample);
 }
 
-const bool Word2VecOptions::UseHierachicalSoftmax() const {
+bool Word2VecOptions::UseHierachicalSoftmax() const {
   return get<bool>(W2VOpNames::hs);
 }
 
-const uint16_t Word2VecOptions::NegativeSize() const {
+uint16_t Word2VecOptions::NegativeSize() const {
   return get<uint16_t>(W2VOpNames::negative);
 }
 
-const uint16_t Word2VecOptions::IterationSize() const {
+uint16_t Word2VecOptions::IterationSize() const {
   return get<uint16_t>(W2VOpNames::iter);
 }
 
-const uint16_t Word2VecOptions::MinCount() const {
+uint16_t Word2VecOptions::MinCount() const {
   return get<uint16_t>(W2VOpNames::min_count);
 }
 
-const uint16_t Word2VecOptions::NumClusters() const {
+uint16_t Word2VecOptions::NumClusters() const {
   return get<uint16_t>(W2VOpNames::classes);
 }
 
-const bool Word2VecOptions::HasMandatoryOptions() const {
+bool Word2VecOptions::HasMandatoryOptions() const {
   return get_op<std::filesystem::path>(W2VOpNames::train).has_value() &&
          get_op<std::filesystem::path>(W2VOpNames::output).has_value();
 }
 
-const uint16_t Word2VecOptions::ThreadSize() const {
+uint16_t Word2VecOptions::ThreadSize() const {
   return get<uint16_t>(W2VOpNames::threads);
 }

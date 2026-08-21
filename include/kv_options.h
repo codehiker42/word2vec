@@ -128,7 +128,7 @@ class ConsoleOptionValues {
     }
   }
 
-  virtual const bool HasMandatoryOptions() const = 0;
+  virtual bool HasMandatoryOptions() const = 0;
 
  private:
   std::vector<std::string> name_order_vec_;
