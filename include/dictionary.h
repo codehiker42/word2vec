@@ -23,7 +23,7 @@ class Dictionary {
 
   Dictionary(
       const std::filesystem::path& file_path, const size_t min_freq,
-      const WordReader::FactoryFnT& factory_fn = WorkStreamReaderFunctor());
+      WordReader::FactoryFnT&& factory_fn = WordStreamReaderFunctor());
 
   std::optional<W2VType::WordIndexT> GetIndex(const std::string& word) const;
 

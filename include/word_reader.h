@@ -33,7 +33,7 @@ class WordStreamReader : public WordReader {
   std::mutex lock_;
 };
 
-struct WorkStreamReaderFunctor {
+struct WordStreamReaderFunctor {
   std::unique_ptr<WordReader> operator()(
       const std::filesystem::path& file_path) const {
     return std::make_unique<WordStreamReader>(file_path);

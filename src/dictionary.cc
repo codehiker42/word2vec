@@ -9,8 +9,7 @@
 
 namespace {
 void ReadStreamAndUpdateFreqs(const std::filesystem::path& file_path,
-                              const std::function<std::unique_ptr<WordReader>(
-                                  const std::filesystem::path&)>& factory_fn,
+                              const WordReader::FactoryFnT& factory_fn,
                               std::unordered_map<std::string, size_t>& freq_map,
                               size_t& n_new_lines) {
   std::unique_ptr<WordReader> word_reader = factory_fn(file_path);
@@ -54,8 +53,7 @@ std::vector<std::tuple<std::string, size_t>> SortAscend(
 
 Dictionary::Dictionary(const std::filesystem::path& file_path,
                        const size_t min_freq,
-                       const std::function<std::unique_ptr<WordReader>(
-                           const std::filesystem::path&)>& factory_fn) {
+                       WordReader::FactoryFnT&& factory_fn) {
   std::unordered_map<std::string, size_t> freq_map;
   size_t n_new_lines = 0;
   ReadStreamAndUpdateFreqs(file_path, factory_fn, freq_map, n_new_lines);

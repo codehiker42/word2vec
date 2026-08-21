@@ -28,7 +28,7 @@ class SentenceReader : public AbstractSentenceReader {
   SentenceReader(
       const std::filesystem::path& train_file, const Dictionary& dictionary,
       const float sample,
-      const WordReader::FactoryFnT& factory_fn = WorkStreamReaderFunctor(),
+      WordReader::FactoryFnT&& factory_fn = WordStreamReaderFunctor(),
       const size_t n_words_sen_limit = 1000);
 
   ~SentenceReader() = default;
@@ -50,8 +50,7 @@ struct DefaultSentenceReaderFunctor {
   std::unique_ptr<AbstractSentenceReader> operator()(
       const std::filesystem::path& train_file, const Dictionary& dictionary,
       const float sample) const {
-    return std::make_unique<SentenceReader>(train_file, dictionary,
-                                                    sample);
+    return std::make_unique<SentenceReader>(train_file, dictionary, sample);
   }
 };
 
@@ -60,10 +59,10 @@ class BufferedDaemonSentenceReader : public AbstractSentenceReader {
   BufferedDaemonSentenceReader() = delete;
   BufferedDaemonSentenceReader(const std::size_t n_iteration,
                                const size_t n_client_threads,
-                               const std::filesystem::path& train_file,
+                               std::filesystem::path train_file,
                                const Dictionary& dictionary, const float sample,
-                               const AbstractSentenceReader::FactoryFnT&
-                                   factory = DefaultSentenceReaderFunctor());
+                               AbstractSentenceReader::FactoryFnT factory =
+                                   DefaultSentenceReaderFunctor());
   ~BufferedDaemonSentenceReader();
 
   bool Register();
@@ -92,10 +91,10 @@ class BufferedDaemonSentenceReader : public AbstractSentenceReader {
   size_t iter_idx_{0};
   size_t n_iteration_;
 
-  const std::filesystem::path& train_file_;
+  std::filesystem::path train_file_;
   const Dictionary& dictionary_;
   const float sample_;
-  const SentenceReader::FactoryFnT& sentence_reader_factory_;
+  SentenceReader::FactoryFnT sentence_reader_factory_;
   std::unique_ptr<AbstractSentenceReader> p_sen_reader_;
 
   size_t n_ring_buffers_;

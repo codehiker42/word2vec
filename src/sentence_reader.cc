@@ -6,7 +6,7 @@
 
 SentenceReader::SentenceReader(const std::filesystem::path& train_file,
                                const Dictionary& dictionary, const float sample,
-                               const WordReader::FactoryFnT& factory_fn,
+                               WordReader::FactoryFnT&& factory_fn,
                                const size_t n_words_sen_limit)
     : dictionary_(dictionary),
       word_reader_(factory_fn(train_file)),
@@ -78,13 +78,13 @@ BufferedDaemonSentenceReader::RingBuffer::~RingBuffer() {
 
 BufferedDaemonSentenceReader::BufferedDaemonSentenceReader(
     const size_t n_iteration, const size_t n_client_threads,
-    const std::filesystem::path& train_file, const Dictionary& dictionary,
-    const float sample, const SentenceReader::FactoryFnT& factory)
+    std::filesystem::path train_file, const Dictionary& dictionary,
+    const float sample, SentenceReader::FactoryFnT factory)
     : n_iteration_(n_iteration),
-      train_file_(train_file),
+      train_file_(std::move(train_file)),
       dictionary_(dictionary),
       sample_(sample),
-      sentence_reader_factory_(factory),
+      sentence_reader_factory_(std::move(factory)),
       p_sen_reader_(
           sentence_reader_factory_(train_file_, dictionary_, sample_)),
       n_ring_buffers_(n_client_threads),
