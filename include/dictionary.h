@@ -29,7 +29,7 @@ class Dictionary {
 
   void DumpVocab(const std::filesystem::path& file_path) const;
 
-  size_t VocabSize() const;
+  virtual size_t VocabSize() const;
 
   size_t NumTotalFreqs() const;  // not including NEW_LINE
 
