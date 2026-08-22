@@ -1,9 +1,10 @@
 #include "word_layer.h"
 
+#include <execution>
 #include <iomanip>
 #include <memory>
+#include <numeric>
 #include <random>
-#include <ranges>
 #include <stdexcept>
 
 WordLayer::WordLayer(const Dictionary& dictionary, const size_t vector_size)
@@ -66,58 +67,106 @@ void WordLayer::ClusterVectorOutput::WriteVector(
   }
 }
 
-std::vector<size_t> WordLayer::KMeanCluster(const size_t n_clusters) const {
-  const size_t size = dictionary_.VocabSize();
-  std::vector<size_t> clustered_vec(size);
-  std::iota(clustered_vec.begin(), clustered_vec.end(), 0ULL);
-  for (size_t i = 1; i < clustered_vec.size(); ++i) {
-    clustered_vec[i] %= n_clusters;
-  }
-  for (size_t i = 0; i < kCluseringIter; ++i) {
-    KMeanCluster(n_clusters, clustered_vec);
-  }
-  return clustered_vec;
+namespace {
+
+void CalcCentroids(
+    Aligned2DBuffer<W2VType::RealT>& centroids,
+    const std::vector<std::vector<W2VType::WordIndexT>>& cluster_vec,
+    const std::vector<size_t>& cluster_ids,
+    const Aligned2DBuffer<W2VType::RealT>& word_buffer) {
+  std::for_each(
+      std::execution::par_unseq, cluster_ids.begin(), cluster_ids.end(),
+      [&](const size_t ci) {
+        const std::vector<W2VType::WordIndexT>& a_cluster = cluster_vec.at(ci);
+        if (a_cluster.empty()) {
+          return;
+        }
+        auto cent_vec_it = centroids.LayerIterPair(ci);
+        for (W2VType::WordIndexT w_id : a_cluster) {
+          const auto word_vec_it = word_buffer.LayerIterPair(w_id);
+          std::transform(std::execution::seq, word_vec_it.first,
+                         word_vec_it.second, cent_vec_it.first,
+                         cent_vec_it.first, std::plus<W2VType::RealT>());
+        }
+        const size_t cluster_size = a_cluster.size();
+        const auto norm = std::sqrt(std::reduce(
+            std::execution::seq, cent_vec_it.first, cent_vec_it.second, 0.0,
+            [cluster_size](const auto reduced, const auto elem_sum) {
+              const auto avg_elem = elem_sum / cluster_size;
+              return avg_elem * avg_elem + reduced;
+            }));
+        std::transform(std::execution::seq, cent_vec_it.first,
+                       cent_vec_it.second, cent_vec_it.first,
+                       [cluster_size, norm](const auto elem_sum) {
+                         return elem_sum / cluster_size / norm;
+                       });
+      });
 }
 
-void WordLayer::KMeanCluster(const size_t n_clusters,
-                             std::vector<size_t>& clustered_vec) const {
-  const size_t vec_size = buffer_.VecSize();
-  const size_t vocab_size = dictionary_.VocabSize();
-  std::vector<std::vector<W2VType::RealT>> avg_vecs(
-      n_clusters, std::vector<W2VType::RealT>(vec_size));
-  std::vector<size_t> counts(n_clusters, 1ULL);  // to avoid 'divide by zero'
-  for (size_t i = 1; i < vocab_size; ++i) {      // skip 0
-    const auto cl_id = clustered_vec.at(i);
-    auto& avg_v = avg_vecs.at(cl_id);
-    const auto word_vec_it = buffer_.LayerIterPair(i);
-    std::transform(word_vec_it.first, word_vec_it.second, avg_v.cbegin(),
-                   avg_v.begin(), std::plus<W2VType::RealT>());
-    ++counts[cl_id];
-  }
-  for (size_t i = 0; i < n_clusters; ++i) {
-    const auto cnt = counts.at(i);
-    auto& avg_v = avg_vecs.at(i);
-    std::transform(avg_v.cbegin(), avg_v.cend(), avg_v.begin(),
-                   [cnt](const auto sum) { return sum / cnt; });
-    const auto norm = std::sqrt(
-        std::inner_product(avg_v.cbegin(), avg_v.cend(), avg_v.cbegin(), 0.0));
+void Cluster(std::vector<std::vector<W2VType::WordIndexT>>& cluster_vec,
+             const std::vector<size_t>& cluster_ids,
+             const std::vector<W2VType::WordIndexT>& w_id_vecs,
+             const Aligned2DBuffer<W2VType::RealT>& word_buffer) {
+  const size_t vocab_size = w_id_vecs.size();
+  const size_t n_clusters = cluster_ids.size();
 
-    std::transform(avg_v.cbegin(), avg_v.cend(), avg_v.begin(),
-                   [norm](const auto sum) { return sum / norm; });
-  }
-  for (size_t i = 1; i < vocab_size; ++i) {  // skip 0
-    const auto word_vec_it = buffer_.LayerIterPair(i);
-    std::vector<W2VType::RealT> dot_vals(n_clusters);
+  Aligned2DBuffer<W2VType::RealT> centroids(n_clusters, word_buffer.VecSize());
+  CalcCentroids(centroids, cluster_vec, cluster_ids, word_buffer);
 
-    for (size_t ci = 0; ci < n_clusters; ++ci) {
-      auto& avg_v = avg_vecs.at(ci);
-      dot_vals[ci] = std::inner_product(word_vec_it.first, word_vec_it.second,
-                                        avg_v.cbegin(), 0.0);
-    }
-    clustered_vec[i] =
-        std::distance(dot_vals.cbegin(),
+  std::vector<W2VType::WordIndexT> cluster_id_result(vocab_size);
+  std::for_each(std::execution::par_unseq, std::next(w_id_vecs.begin()),
+                w_id_vecs.end(), [&](const auto w_id) {
+                  const auto word_vec_it = word_buffer.LayerIterPair(w_id);
+                  std::vector<W2VType::RealT> dot_vals(n_clusters);
+
+                  for (size_t ci = 0; ci < n_clusters; ++ci) {
+                    auto norm_vec_it = centroids.LayerIterPair(ci);
+                    dot_vals[ci] = std::transform_reduce(
+                        std::execution::seq, word_vec_it.first,
+                        word_vec_it.second, norm_vec_it.first, 0.0);
+                  }
+
+                  cluster_id_result[w_id] = std::distance(
+                      dot_vals.cbegin(),
                       std::max_element(dot_vals.cbegin(), dot_vals.cend()));
+                });
+
+  std::vector<std::vector<W2VType::WordIndexT>> result(n_clusters);
+  for (W2VType::WordIndexT w_id = 1; w_id < vocab_size; ++w_id) {
+    result[cluster_id_result.at(w_id)].emplace_back(w_id);
   }
+  std::swap(result, cluster_vec);
+}
+
+}  // unnamed namespace
+
+std::vector<size_t> WordLayer::KMeanCluster(const size_t n_clusters) const {
+  const size_t vocab_size = dictionary_.VocabSize();
+  std::vector<std::vector<W2VType::WordIndexT>> cluster_vec(n_clusters);
+  for (size_t i = 1; i < vocab_size; ++i) {  // initialisation, skip 0
+    cluster_vec[i % n_clusters].emplace_back(i);
+  }
+  std::vector<size_t> cluster_ids(n_clusters);  // const
+  std::iota(cluster_ids.begin(), cluster_ids.end(), 0ULL);
+  std::vector<W2VType::WordIndexT> w_id_vecs(vocab_size);  // const
+  std::iota(w_id_vecs.begin(), w_id_vecs.end(), 0ULL);
+
+  for (size_t i = 0; i < kCluseringIter; ++i) {
+    Cluster(cluster_vec, cluster_ids, w_id_vecs, buffer_);
+  }
+
+  std::vector<size_t> cluster_result_flattened(vocab_size);
+
+  for (size_t ci = 0, packed_ci = 0; ci < cluster_vec.size(); ++ci) {
+    if (cluster_vec.at(ci).empty()) {
+      continue;
+    }
+    for (W2VType::WordIndexT w_id : cluster_vec.at(ci)) {
+      cluster_result_flattened[w_id] = packed_ci;
+    }
+    ++packed_ci;
+  }
+  return cluster_result_flattened;
 }
 
 std::unique_ptr<WordLayer::WordVectorOutput> WordLayer::VectorOutputFactory(

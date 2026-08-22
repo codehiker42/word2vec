@@ -80,8 +80,6 @@ class WordLayer {
   };
 
   std::vector<size_t> KMeanCluster(const size_t n_clusters) const;
-  void KMeanCluster(const size_t n_clusters,
-                    std::vector<size_t>& clustered_vec) const;
 
   std::unique_ptr<WordVectorOutput> VectorOutputFactory(size_t n_classes,
                                                         bool bin_or_not) const;

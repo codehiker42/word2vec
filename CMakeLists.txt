@@ -20,11 +20,16 @@ add_executable(word2vec
 	src/w2v_launcher.cc
 )
 
+target_compile_definitions(word2vec PRIVATE DPARALLEL)
+
 find_package(Threads REQUIRED)
+find_package(TBB REQUIRED)
 
 target_link_libraries(word2vec
 	PUBLIC w2vCompilerOps
-	PRIVATE Threads::Threads
+	PRIVATE
+		Threads::Threads
+		TBB::tbb
 )
 
 target_include_directories(word2vec PUBLIC include)

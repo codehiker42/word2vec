@@ -16,6 +16,7 @@ function(add_gtest targetName)
 	target_link_libraries(${targetName}
 		PUBLIC w2vCompilerOps
 		PRIVATE
+			TBB::tbb
 			GTest::gtest_main
 			GTest::gmock_main
 	)
